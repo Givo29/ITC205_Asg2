@@ -16,7 +16,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Book implements Serializable {
 	
-	private String titLe;
+	private String title;
 	private String author;
 	private String callNo;
 	private int id;
@@ -36,7 +36,7 @@ public class Book implements Serializable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Book: ").append(id).append("\n")
-		  .append("  Title:  ").append(titLe).append("\n")
+		  .append("  Title:  ").append(title).append("\n")
 		  .append("  Author: ").append(author).append("\n")
 		  .append("  CallNo: ").append(callNo).append("\n")
 		  .append("  State:  ").append(state);
