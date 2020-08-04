@@ -53,7 +53,9 @@ public class Library implements Serializable {
 		if (self == null) {
 			Path PATH = Paths.get(libraryFile);			
 			if (Files.exists(PATH)) {	
-				try (ObjectInputStream LibraryFile = new ObjectInputStream(new FileInputStream(libraryFile));) {
+				FileInputStream libraryFileInputStream = new FileInputStream(libraryFile);
+				ObjectInputStream LibraryFile = new ObjectInputStream(libraryFileInputStream);
+				try (LibraryFile) {
 					self = (Library) LibraryFile.readObject();
 					Calendar.getInstance().setDate(self.loanDate);
 					LibraryFile.close();
@@ -68,10 +70,12 @@ public class Library implements Serializable {
 	}
 
 
-	public static synchronized void SaVe() {
+	public static synchronized void save() {
 		if (self != null) {
 			self.loanDate = Calendar.getInstance().getDate();
-			try (ObjectOutputStream LibraryFile = new ObjectOutputStream(new FileOutputStream(libraryFile));) {
+			FileInputStream libraryFileInputStream = new FileInputStream(libraryFile);
+			ObjectInputStream LibraryFile = new ObjectInputStream(libraryFileInputStream);
+			try (LibraryFile) {
 				LibraryFile.writeObject(self);
 				LibraryFile.flush();
 				LibraryFile.close();	
@@ -124,29 +128,35 @@ public class Library implements Serializable {
 
 
 	public Member addMember(String lastName, String firstName, String email, int phoneNo) {		
-		Member member = new Member(lastName, firstName, email, phoneNo, getNextMemberId());
-		members.put(member.getId(), member);		
+		int nextMemberId = getNextMemberId();
+		Member member = new Member(lastName, firstName, email, phoneNo, nextMemberId);
+		int currentMemberId = member.getId();
+		members.put(currentMemberId, member);		
 		return member;
 	}
 
 
 	public Book addBook(String a, String t, String c) {		
-		Book b = new Book(a, t, c, getNextBookId());
-		catalog.put(b.getId(), b);		
+		int nextBookID = getNextBookId();
+		Book b = new Book(a, t, c, nextBookId);
+		int currentBookId = b.getId();
+		catalog.put(currentBookId, b);		
 		return b;
 	}
 
 
 	public Member getMember(int memberId) {
-		if (members.containsKey(memberId)) 
+		if (members.containsKey(memberId)) {
 			return members.get(memberId);
+		}
 		return null;
 	}
 
 
 	public Book getBook(int bookId) {
-		if (catalog.containsKey(bookId)) 
-			return catalog.get(bookId);		
+		if (catalog.containsKey(bookId)) {
+			return catalog.get(bookId);	
+		}
 		return null;
 	}
 
@@ -157,16 +167,19 @@ public class Library implements Serializable {
 
 
 	public boolean canMemberBorrow(Member member) {		
-		if (member.getNumberOfCurrentLoans() == loanLimit ) 
+		if (member.getNumberOfCurrentLoans() == loanLimit) { 
 			return false;
-				
-		if (member.finesOwed() >= maxFinesOwed) 
+		}
+
+		if (member.finesOwed() >= maxFinesOwed)  {
 			return false;
-				
-		for (Loan loan : member.getLoans()) 
-			if (loan.isOverdue()) 
+		}
+
+		for (Loan loan : member.getLoans()) {
+			if (loan.isOverdue()) {
 				return false;
-			
+			}
+		}
 		return true;
 	}
 
@@ -177,27 +190,31 @@ public class Library implements Serializable {
 
 
 	public Loan issueLoan(Book book, Member member) {
+		int nextLoanId = getNextLoanId();
+		int currentBookId = book.getId();
 		Date dueDate = Calendar.getInstance().getDueDate(loanPeriod);
-		Loan loan = new Loan(getNextLoanId(), book, member, dueDate);
+		Loan loan = new Loan(nextLoanId, book, member, dueDate);
+		int currentLoanId = loan.getId();
 		member.takeOutLoan(loan);
 		book.borrow();
-		loans.put(loan.getId(), loan);
-		currentLoans.put(book.getId(), loan);
+		loans.put(currentLoanId, loan);
+		currentLoans.put(currentBookId, loan);
 		return loan;
 	}
 
 
 	public Loan getLoanByBookId(int bookId) {
-		if (currentLoans.containsKey(bookId)) 
+		if (currentLoans.containsKey(bookId)) {
 			return currentLoans.get(bookId);
-		
+		}
 		return null;
 	}
 
 
 	public double calculateOverdueFine(Loan loan) {
+		Date loanDueDate = loan.getDueDate();
 		if (loan.isOverdue()) {
-			long daysOverdue = Calendar.getInstance().getDaysDifference(loan.getDueDate());
+			long daysOverdue = Calendar.getInstance().getDaysDifference(loanDueDate);
 			double fine = daysOverdue * finePerDay;
 			return fine;
 		}
@@ -207,34 +224,38 @@ public class Library implements Serializable {
 
 	public void dischargeLoan(Loan currentLoan, boolean isDamaged) {
 		Member member = currentLoan.getMember();
-		Book bOoK  = currentLoan.getBook();
+		Book book  = currentLoan.getBook();
 		
 		double overdueFine = calcuateOverdueFine(currentLoan);
 		member.addFine(overdueFine);	
 		
 		member.dischargeLoan(currentLoan);
 		book.return(isDamaged);
+		int currentBookId = book.getId()
 		if (isDamaged) {
 			member.addFine(damageFee);
-			damagedBooks.put(book.getId(), book);
+			damagedBooks.put(currentBookId, book);
 		}
 		currentLoan.discharge();
-		currentLoans.remove(book.getId());
+		currentLoans.remove(currentBookId);
 	}
 
 
 	public void checkCurentLoans() {
-		for (Loan loan : currentLoans.values()) 
+		for (Loan loan : currentLoans.values()) {
 			loan.checkOverDue();			
+		}
 	}
 
 
 	public void repairBook(Book currentBook) {
-		if (damagedBooks.containsKey(currentBook.getId())) {
+		int currentBookId = currentBook.getId()
+		if (damagedBooks.containsKey(currentBookId)) {
 			currentBook.repair();
-			damagedBooks.remove(currentBook.getId());
+			damagedBooks.remove(currentBookId);
 		}
-		else 
+		else {
 			throw new RuntimeException("Library: repairBook: book is not damaged");
+		}
 	}
 }
