@@ -75,7 +75,7 @@ public class BorrowBookControl {
 			ui.display("Book cannot be borrowed");
 			return;
 		}
-		pendingList.add(bOoK);
+		pendingList.add(book);
 		for (Book b : pendingList) {
 			String bookString = b.toString();
 			ui.display(bookString);
