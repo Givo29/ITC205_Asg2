@@ -29,10 +29,10 @@ public class Calendar {
 	public synchronized void setDate(Date date) {
 		try {
 			calendar.setTime(date);
-	    	calendar.set(java.util.calendar.HOUR_OF_DAY, 0);  
-	        calendar.set(java.util.calendar.MINUTE, 0);  
-	        calendar.set(java.util.calendar.SECOND, 0);  
-	        calendar.set(java.util.calendar.MILLISECOND, 0);
+	    	calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);  
+	        calendar.set(java.util.Calendar.MINUTE, 0);  
+	        calendar.set(java.util.Calendar.SECOND, 0);  
+	        calendar.set(java.util.Calendar.MILLISECOND, 0);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

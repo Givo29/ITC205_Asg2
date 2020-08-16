@@ -21,8 +21,8 @@ public class Book implements Serializable {
 	private String callNo;
 	private int id;
 	
-	private enum state { AVAILABLE, ON_LOAN, DAMAGED, RESERVED };
-	private state state;
+	private enum State { AVAILABLE, ON_LOAN, DAMAGED, RESERVED };
+	private State state;
 	
 	
 	public Book(String author, String title, String callNo, int id) {
@@ -30,7 +30,7 @@ public class Book implements Serializable {
 		this.title = title;
 		this.callNo = callNo;
 		this.id = id;
-		this.state = state.AVAILABLE;
+		this.state = State.AVAILABLE;
 	}
 	
 	public String toString() {
@@ -55,23 +55,23 @@ public class Book implements Serializable {
 
 	
 	public boolean isAvailable() {
-		return state == state.AVAILABLE;
+		return state == State.AVAILABLE;
 	}
 
 	
 	public boolean isOnLoan() {
-		return state == state.ON_LOAN;
+		return state == State.ON_LOAN;
 	}
 
 	
 	public boolean isDamaged() {
-		return state == state.DAMAGED;
+		return state == State.DAMAGED;
 	}
 
 	
 	public void borrow() {
-		if (state.equals(state.AVAILABLE))
-			state = state.ON_LOAN;
+		if (state.equals(State.AVAILABLE))
+			state = State.ON_LOAN;
 		
 		else 
 			throw new RuntimeException(String.format("Book: cannot borrow while book is in state: %s", state));
@@ -80,13 +80,13 @@ public class Book implements Serializable {
 	}
 
 
-	public void return(boolean damaged) {
-		if (state.equals(state.ON_LOAN))
+	public void returnBook(boolean damaged) {
+		if (state.equals(State.ON_LOAN))
 			if (damaged)
-				state = state.DAMAGED;
+				state = State.DAMAGED;
 			
 			else 
-				state = state.AVAILABLE;
+				state = State.AVAILABLE;
 			
 		
 		else 
@@ -96,8 +96,8 @@ public class Book implements Serializable {
 
 	
 	public void repair() {
-		if (state.equals(state.DAMAGED))
-			state = state.AVAILABLE;
+		if (state.equals(State.DAMAGED))
+			state = State.AVAILABLE;
 		
 		else 
 			throw new RuntimeException(String.format("Book: cannot repair while book is in state: %s", state));
