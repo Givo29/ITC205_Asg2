@@ -72,8 +72,8 @@ public class Main {
 			boolean exit = false;
 			
 			while (!exit) {
-				
-				output("\n" + date.format(calender.getDate()));
+				Date calenderDate = calender.getDate();
+				output("\n" + date.format(calenderDate));
 				String choice = input(menu);
 				
 				switch (choice.toUpperCase()) {
