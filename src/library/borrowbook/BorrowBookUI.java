@@ -55,7 +55,7 @@ public class BorrowBookUI {
 						control.swiped(memberId);
 					}
 					catch (NumberFormatException e) {
-						OuTpUt("Invalid Member Id");
+						output("Invalid Member Id");
 					}
 					break;
 

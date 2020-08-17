@@ -136,12 +136,12 @@ public class Library implements Serializable {
 	}
 
 
-	public Book addBook(String a, String t, String c) {		
+	public Book addBook(String author, String title, String callNo) {		
 		int nextBookID = getNextBookId();
-		Book b = new Book(a, t, c, nextBookId);
-		int currentBookId = b.getId();
-		catalog.put(currentBookId, b);		
-		return b;
+		Book book = new Book(author, title, callNo, nextBookID);
+		int currentBookId = book.getId();
+		catalog.put(currentBookId, book);		
+		return book;
 	}
 
 
@@ -226,12 +226,12 @@ public class Library implements Serializable {
 		Member member = currentLoan.getMember();
 		Book book  = currentLoan.getBook();
 		
-		double overdueFine = calcuateOverdueFine(currentLoan);
+		double overdueFine = calculateOverdueFine(currentLoan);
 		member.addFine(overdueFine);	
 		
 		member.dischargeLoan(currentLoan);
-		book.return(isDamaged);
-		int currentBookId = book.getId()
+		book.returnBook(isDamaged);
+		int currentBookId = book.getId();
 		if (isDamaged) {
 			member.addFine(damageFee);
 			damagedBooks.put(currentBookId, book);
@@ -243,13 +243,13 @@ public class Library implements Serializable {
 
 	public void checkCurentLoans() {
 		for (Loan loan : currentLoans.values()) {
-			loan.checkOverDue();			
+			loan.checkOverdue();			
 		}
 	}
 
 
 	public void repairBook(Book currentBook) {
-		int currentBookId = currentBook.getId()
+		int currentBookId = currentBook.getId();
 		if (damagedBooks.containsKey(currentBookId)) {
 			currentBook.repair();
 			damagedBooks.remove(currentBookId);
