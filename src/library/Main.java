@@ -1,6 +1,7 @@
 package library;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
+import java.util.Date;
 
 import library.borrowbook.BorrowBookUI;
 import library.borrowbook.BorrowBookControl;
@@ -72,8 +73,8 @@ public class Main {
 			boolean exit = false;
 			
 			while (!exit) {
-				
-				output("\n" + date.format(calender.getDate()));
+				Date calenderDate = calender.getDate();
+				output("\n" + date.format(calenderDate));
 				String choice = input(menu);
 				
 				switch (choice.toUpperCase()) {
